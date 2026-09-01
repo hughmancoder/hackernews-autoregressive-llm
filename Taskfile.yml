@@ -1,0 +1,25 @@
+version: '3'
+
+tasks:
+  checkpoint:
+    dir: scripts
+    cmds:
+      - npx zx checkpoint.mjs
+
+  download:
+    dir: mainrun
+    cmds:
+      - python3 download_dataset.py
+
+  train:
+    deps: [checkpoint, download]
+    dir: mainrun
+    cmds:
+      - python3 train.py
+
+  submit:
+    deps: [checkpoint]
+    dir: scripts
+    cmds:
+      - npx zx submit.mjs
+    
