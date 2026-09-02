@@ -1,4 +1,5 @@
 import utils
+import argparse
 import math, random, time
 from dataclasses import dataclass
 import json
@@ -21,8 +22,8 @@ class Hyperparameters:
     n_head: int = 8
     d_model: int = 512
     dropout: float = 0.1
-    lr: float = 6e-3
-    weight_decay: float = 0.0
+    lr: float = 6e-4
+    weight_decay: float = 0.1
     evals_per_epoch: int = 3
     
     epochs: int = 7
@@ -30,6 +31,27 @@ class Hyperparameters:
     num_titles: int = 100_000
     val_frac: float = 0.10
     log_file: str = "./logs/mainrun.log"
+
+
+def get_args() -> Hyperparameters:
+    hp = Hyperparameters()
+    parser = argparse.ArgumentParser(description="Train GPT on Hacker News titles")
+    parser.add_argument("--lr", type=float, default=hp.lr, help=f"Learning rate (default: {hp.lr})")
+    parser.add_argument("--vocab_size", type=int, default=hp.vocab_size, help=f"Vocab size (default: {hp.vocab_size})")
+    parser.add_argument("--batch_size", type=int, default=hp.batch_size, help=f"Batch size (default: {hp.batch_size})")
+    parser.add_argument("--block_size", type=int, default=hp.block_size, help=f"Block size (default: {hp.block_size})")
+    parser.add_argument("--weight_decay", type=float, default=hp.weight_decay, help=f"Weight decay (default: {hp.weight_decay})")
+    parser.add_argument("--dropout", type=float, default=hp.dropout, help=f"Dropout (default: {hp.dropout})")
+    parser.add_argument("--n_layer", type=int, default=hp.n_layer, help=f"Number of layers (default: {hp.n_layer})")
+    parser.add_argument("--n_head", type=int, default=hp.n_head, help=f"Number of heads (default: {hp.n_head})")
+    parser.add_argument("--d_model", type=int, default=hp.d_model, help=f"Model dimension (default: {hp.d_model})")
+    parser.add_argument("--evals_per_epoch", type=int, default=hp.evals_per_epoch, help=f"Evals per epoch (default: {hp.evals_per_epoch})")
+    parser.add_argument("--log_file", type=str, default=hp.log_file, help=f"Log file path (default: {hp.log_file})")
+    args, _ = parser.parse_known_args()
+    
+    for k, v in vars(args).items():
+        setattr(hp, k, v)
+    return hp
 
 def configure_logging(log_file: str):
     Path(log_file).parent.mkdir(parents=True, exist_ok=True)
@@ -218,7 +240,7 @@ class GPT(nn.Module):
         return logits, loss
 
 def main():
-    args = Hyperparameters()
+    args = get_args()
     torch.manual_seed(args.seed)
     random.seed(args.seed)
     
@@ -228,7 +250,7 @@ def main():
     hyperparams_dict = vars(args)
     logger.log("hyperparameters_configured", **hyperparams_dict)
     
-    device = "cuda" if torch.cuda.is_available() else "cpu"
+    device = "cuda" if torch.cuda.is_available() else ("mps" if torch.backends.mps.is_available() else "cpu")
     logger.log("device_info", device=device)
 
     train_titles, val_titles = get_titles(args.num_titles, args.seed, args.val_frac)
@@ -262,7 +284,8 @@ def main():
     model_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     logger.log("model_info", parameters_count=model_params)
     
-    opt = torch.optim.SGD(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
+
+    opt = torch.optim.AdamW(model.parameters(), lr=args.lr, betas=(0.9, 0.95), eps=1e-8, weight_decay=args.weight_decay)
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=max_steps)
 
     
@@ -308,6 +331,19 @@ def main():
                           max_steps=max_steps,
                           loss=val_loss,
                           elapsed_time=elapsed)
+
+    checkpoint = {
+        'model': model.state_dict(),
+        'optimizer': opt.state_dict(),
+        'scheduler': scheduler.state_dict(),
+        'step': step,
+        'ptr': ptr,
+        'epoch': epoch,
+    }
+
+    Path("./checkpoints").mkdir(parents=True, exist_ok=True)
+    torch.save(checkpoint, './checkpoints/checkpoint_best.pt')
+    
 
 if __name__ == "__main__":
     try:

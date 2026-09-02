@@ -7,9 +7,17 @@ __pycache__/
 .Python
 env/
 venv/
+.venv/
 .env
 
+# docs
+docs/Todo.md
+docs/Theory.md
+docs/theory.md
+*[Tt]heory*.md
+
 mainrun*.log
+*.pt
 
 node_modules/
 

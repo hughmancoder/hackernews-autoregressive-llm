@@ -6,6 +6,11 @@
   [![PyTorch](https://img.shields.io/badge/PyTorch-2.7.1-orange.svg)](https://pytorch.org/)
 </div>
 
+## Documentation
+- [Training Log](docs/Training%20Log.md)
+- [Notes](docs/Notes.md)
+- [Report](Report.pdf)
+
 ## Why Mainrun?
 
 Mainrun is [Maincode's](https://maincode.com) standardized assessment framework for evaluating machine learning engineering expertise, specifically focused on LLM training and optimization. This project provides a consistent, real-world environment to explore a candidate's knowledge of:
