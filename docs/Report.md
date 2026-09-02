@@ -21,11 +21,13 @@ opt = torch.optim.AdamW(
 
 **Hyperparameter Selection**
 
-- `lr: 0.0006` is a suggested standard learning rate using AdamW with cosine decay. Higher learning rates can lead to instability.
-- `batch_size: 64`. Better for epoch restriction (7). A smaller batch size means your model takes twice as many gradient steps per epoch which may lead to improved learning
-- `Block size: 128` appears to be a long enough context window for longer titles in the dataset
-- `dropout 0.1`: e system deactivates a random 10% subset of nodes in a neural network layer and a new random 10% is chosen for every training batch. As the model appears to learn much faster with Adam loss, and may be more prone to overfitting the relatively small 100k training set. Dropout forces the network to learn generalized patterns rather than memorising exact training phrases which may reduce overfitting. 
+- `lr: 0.0006`: a suggested standard learning rate using AdamW. Higher learning rates can lead to instability.
+- `batch_size: 64`: Better for epoch restriction (7). A smaller batch size means your model takes twice as many gradient steps per epoch which may lead to improved learning
+- `Block size: 128`: appears to be a long enough context window for longer titles in the dataset
+- `dropout 0.1`: The system deactivates a random 10% subset of nodes in a neural network layer and a new random 10% is chosen for every training batch. As the model appears to learn much faster with Adam loss, and may be more prone to overfitting the relatively small 100k training set. Dropout forces the network to learn generalized patterns rather than memorising exact training phrases which may reduce overfitting. 
 
+
+Refer to `docs/Training Log.md` for a more detailed list of training runs
 
 ## Resources
 

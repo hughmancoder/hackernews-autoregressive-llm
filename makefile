@@ -18,3 +18,7 @@ train-hp-02:
 
 train-hp-03:
 	cd mainrun && $(PYTHON) train.py --lr 8e-4 --vocab_size 8000 --block_size 32 --batch_size 128 --weight_decay 0.1 --dropout 0.0
+
+# -s flag enables printing
+test:
+	python3 -m pytest -s tests/test.py

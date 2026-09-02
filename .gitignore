@@ -12,9 +12,7 @@ venv/
 
 # docs
 docs/Todo.md
-docs/Theory.md
-docs/theory.md
-*[Tt]heory*.md
+docs/Gpt-style-architecture.md
 
 mainrun*.log
 *.pt
