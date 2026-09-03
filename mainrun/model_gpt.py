@@ -1,7 +1,7 @@
 """
-Model architecture module.
-Defines the GPT-style transformer model and its configuration.
+Defines the GPT-style transformer model and its configuration
 """
+
 import math
 from dataclasses import dataclass
 
@@ -64,6 +64,7 @@ class Block(nn.Module):
         x = x + self.attn(self.ln1(x))
         x = x + self.mlp(self.ln2(x))
         return x
+
 
 class GPT(nn.Module):
     def __init__(self, cfg: GPTConfig):

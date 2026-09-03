@@ -1,7 +1,7 @@
 """
-Training module.
 Contains hyperparameters, logging configuration, and the core training loop.
 """
+
 import utils
 import argparse
 import random, time

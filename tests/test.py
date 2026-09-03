@@ -5,7 +5,7 @@ import unittest
 import torch
 
 from mainrun.data import train_tokenizer, BPETokenizer, get_batch, iter_full_split
-from mainrun.model import GPTConfig, GPT
+from mainrun.model_llama import GPTConfig, GPT
 
 class TestMainFunctionality(unittest.TestCase):
 
@@ -80,6 +80,7 @@ class TestMainFunctionality(unittest.TestCase):
         self.assertEqual(logits.shape, (batch_size, cfg.block_size, cfg.vocab_size))
         self.assertIsNotNone(loss)
         self.assertTrue(loss.item() > 0)
+
 
 if __name__ == '__main__':
     unittest.main()

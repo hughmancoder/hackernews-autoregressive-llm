@@ -23,7 +23,6 @@ Mainrun is [Maincode's](https://maincode.com) standardized assessment framework 
 
 ## The Challenge
 Your task is to analyze and improve the training run of a small GPT-2 style model. The code is designed to train on a Hacker News headline dataset.
-
 Your goal is to minimize the validation loss as low as possible within 7 epochs. The baseline to beat is a validation loss of 1.754.
 
 ### The Rules
@@ -33,7 +32,6 @@ The rules are simple:
 - You cannot use pre-trained weights or augment the training data.
 - You cannot change the `evaluate()` function.
 - Everything else is fair game! You can change the model architecture, initialization, tokenization, hyperparameters, optimizer, scheduler, training loop, etc.
-
 ## Getting Started
 
 ```bash

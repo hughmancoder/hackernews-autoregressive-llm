@@ -21,4 +21,7 @@ train-hp-03:
 
 # -s flag enables printing
 test:
-	python3 -m pytest -s tests/test.py
+	$(PYTHON) -m pytest -s tests/test.py
+
+test_inference:
+	$(PYTHON) -m pytest -s tests/test_inference.py
