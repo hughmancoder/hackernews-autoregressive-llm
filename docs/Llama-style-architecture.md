@@ -26,6 +26,15 @@ Layer i: LlamaDecoderLayer
 │
 ├── residual connection: x_i+1 = x_attn + mlp_out
 └── output: x_i+1 (LayerNorm)
+
+
+LlamaForCausalLM
+ ├─ model: LlamaModel
+ │    ├─ embed_tokens
+ │    ├─ layers (LlamaDecoderLayer x16)
+ │    ├─ norm
+ │    └─ rotary_emb
+ └─ lm_head
 ```
 ## References
 
@@ -43,3 +52,6 @@ POSITION EMBEDDING](https://arxiv.org/pdf/2104.09864)
 [pytorch Module](https://docs.pytorch.org/docs/2.14/generated/torch.nn.Module.html)
 
 [Swiglu Activation Function](https://www.byhand.ai/p/swiglu-the-activation-function-behind)
+
+
+[RMSNorm](https://arxiv.org/pdf/1910.07467.pdf)

@@ -53,6 +53,7 @@ class MLP(nn.Module):
         )
     def forward(self, x): return self.net(x)
 
+# Decoder Tranformer Block
 class Block(nn.Module):
     def __init__(self, cfg: GPTConfig):
         super().__init__()

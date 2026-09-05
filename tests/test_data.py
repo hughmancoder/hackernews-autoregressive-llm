@@ -5,7 +5,7 @@ import unittest
 import torch
 
 from mainrun.data import train_tokenizer, BPETokenizer, get_batch, iter_full_split
-from mainrun.model_llama import GPTConfig, GPT
+
 
 class TestMainFunctionality(unittest.TestCase):
 
@@ -60,26 +60,6 @@ class TestMainFunctionality(unittest.TestCase):
         self.assertEqual(x0.shape, (batch_size, block_size))
         self.assertEqual(y0.shape, (batch_size, block_size))
 
-    def test_gpt_forward(self):
-        cfg = GPTConfig(
-            vocab_size=100,
-            block_size=16,
-            n_layer=2,
-            n_head=2,
-            d_model=32,
-            dropout=0.0
-        )
-        model = GPT(cfg)
-        
-        batch_size = 2
-        x = torch.randint(0, cfg.vocab_size, (batch_size, cfg.block_size))
-        y = torch.randint(0, cfg.vocab_size, (batch_size, cfg.block_size))
-        
-        logits, loss = model(x, y)
-        
-        self.assertEqual(logits.shape, (batch_size, cfg.block_size, cfg.vocab_size))
-        self.assertIsNotNone(loss)
-        self.assertTrue(loss.item() > 0)
 
 
 if __name__ == '__main__':

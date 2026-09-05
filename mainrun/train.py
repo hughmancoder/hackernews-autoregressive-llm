@@ -15,19 +15,21 @@ from tqdm import tqdm
 import structlog
 
 from data import get_titles, get_batch, iter_full_split, train_tokenizer, BPETokenizer
-from model import GPTConfig, GPT
+from torch.optim.lr_scheduler import LinearLR, CosineAnnealingLR, SequentialLR
+from llama_model import LlamaConfig, LlamaModel
 
 @dataclass
 class Hyperparameters:
     block_size: int = 32
     batch_size: int = 128
     vocab_size: int = 8_000
-    n_layer: int = 6
-    n_head: int = 8
+    n_layer: int = 6 # decoder layers
+    n_head: int = 8 # in features  
     d_model: int = 512
     dropout: float = 0.0
-    lr: float = 8e-4
+    lr: float = 6e-4
     weight_decay: float = 0.1
+    warmup_steps: int = 100
     evals_per_epoch: int = 3
     
     epochs: int = 7
@@ -50,6 +52,7 @@ def get_args() -> Hyperparameters:
     parser.add_argument("--n_head", type=int, default=hp.n_head, help=f"Number of heads (default: {hp.n_head})")
     parser.add_argument("--d_model", type=int, default=hp.d_model, help=f"Model dimension (default: {hp.d_model})")
     parser.add_argument("--evals_per_epoch", type=int, default=hp.evals_per_epoch, help=f"Evals per epoch (default: {hp.evals_per_epoch})")
+    parser.add_argument("--warmup_steps", type=int, default=hp.warmup_steps, help=f"Warmup steps (default: {hp.warmup_steps})")
     parser.add_argument("--log_file", type=str, default=hp.log_file, help=f"Log file path (default: {hp.log_file})")
     args, _ = parser.parse_known_args()
     
@@ -136,7 +139,7 @@ def main():
                tokens_per_epoch=len(train_ids),
                vocab_size=tok.vocab_size)
 
-    cfg = GPTConfig(
+    cfg = LlamaConfig(
         vocab_size = tok.vocab_size,
         block_size = args.block_size,
         n_layer    = args.n_layer,
@@ -144,11 +147,12 @@ def main():
         d_model    = args.d_model,
         dropout    = args.dropout,
     )
-    model = GPT(cfg).to(device)
+    model = LlamaModel(cfg).to(device)
     model_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     logger.log("model_info", parameters_count=model_params)
     
 
+    # Optimiser and schedular chosen based on paper LLaMA: Open and Efficient Foundation Language Model
     opt = torch.optim.AdamW(model.parameters(), lr=args.lr, betas=(0.9, 0.95), eps=1e-8, weight_decay=args.weight_decay)
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=max_steps)
 

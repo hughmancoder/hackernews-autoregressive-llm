@@ -2,8 +2,7 @@ PYTHON := $(shell if [ -f .venv/bin/python3 ]; then echo "$$(pwd)/.venv/bin/pyth
 
 train:
 	task train
-
-
+	
 analyse:
 	cat mainrun/logs/baseline.log
 
@@ -20,8 +19,14 @@ train-hp-03:
 	cd mainrun && $(PYTHON) train.py --lr 8e-4 --vocab_size 8000 --block_size 32 --batch_size 128 --weight_decay 0.1 --dropout 0.0
 
 # -s flag enables printing
-test:
-	$(PYTHON) -m pytest -s tests/test.py
+test_data:
+	$(PYTHON) -m pytest -s tests/test_data.py
 
-test_inference:
-	$(PYTHON) -m pytest -s tests/test_inference.py
+test_llama:
+	$(PYTHON) -m pytest -s tests/test_llama.py
+
+test:
+	$(PYTHON) -m pytest -s tests/
+
+# test_inference:
+#	$(PYTHON) -m pytest -s tests/test_inference.py
