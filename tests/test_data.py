@@ -8,7 +8,6 @@ from mainrun.data import train_tokenizer, BPETokenizer, get_batch, iter_full_spl
 
 
 class TestMainFunctionality(unittest.TestCase):
-
     def test_tokenizer(self):
         titles = ["hello world", "hacker news is great", "testing tokenizer"]
         vocab_size = 50

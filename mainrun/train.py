@@ -2,6 +2,7 @@
 Contains hyperparameters, logging configuration, and the core training loop.
 """
 
+import posixpath
 import utils
 import argparse
 import random, time
@@ -20,12 +21,12 @@ from llama_model import LlamaConfig, LlamaModel
 
 @dataclass
 class Hyperparameters:
-    block_size: int = 32
+    block_size: int = 128
     batch_size: int = 128
     vocab_size: int = 8_000
-    n_layer: int = 6 # decoder layers
-    n_head: int = 8 # in features  
-    d_model: int = 512
+    n_layer: int = 6 # Transformer layers
+    n_head: int = 8 # Attention heads
+    d_model: int = 512 # Embeddings dimension
     dropout: float = 0.0
     lr: float = 6e-4
     weight_decay: float = 0.1
@@ -148,13 +149,28 @@ def main():
         dropout    = args.dropout,
     )
     model = LlamaModel(cfg).to(device)
+    # Count model params
     model_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     logger.log("model_info", parameters_count=model_params)
     
 
-    # Optimiser and schedular chosen based on paper LLaMA: Open and Efficient Foundation Language Model
-    opt = torch.optim.AdamW(model.parameters(), lr=args.lr, betas=(0.9, 0.95), eps=1e-8, weight_decay=args.weight_decay)
-    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=max_steps)
+    # Separate parameters into decay and no_decay groups as norms and biases shouldn't be decayed
+    param_dict = {pn: p for pn, p in model.named_parameters() if p.requires_grad}
+    decay_params = [p for n, p in param_dict.items() if p.dim() >= 2]
+    nodecay_params = [p for n, p in param_dict.items() if p.dim() < 2]
+    optim_groups = [
+        {'params': decay_params, 'weight_decay': args.weight_decay},
+        {'params': nodecay_params, 'weight_decay': 0.0}
+    ]
+    
+    # Optimiser and scheduler paramaters chosen based on paper LLaMA: Open and Efficient Foundation Language Model
+    opt = torch.optim.AdamW(optim_groups, lr=args.lr, betas=(0.9, 0.95), eps=1e-8)
+
+    # Warmup scheduler linearly increases learning rate from 1% to 100% of args.lr over warmup_steps
+    warmup_scheduler = LinearLR(opt, start_factor=0.01, total_iters=args.warmup_steps)
+    # Cosine scheduler decays from peak lr down to 10% of max lr as specified in LLaMA paper
+    cosine_scheduler = CosineAnnealingLR(opt, T_max=max_steps - args.warmup_steps, eta_min=0.1 * args.lr)
+    scheduler = SequentialLR(opt, schedulers=[warmup_scheduler, cosine_scheduler], milestones=[args.warmup_steps])
 
     
     # NOTE: do not change
@@ -166,6 +182,7 @@ def main():
                 logits, _ = model(xb, yb)
                 B, T, V = logits.size()
                 loss = F.cross_entropy(logits.view(-1, V), yb.view(-1), reduction='sum')
+                # cross entropy loss per character
                 losses += loss.item()
         model.train()
         return losses / len(val_text)

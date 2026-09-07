@@ -7,8 +7,8 @@
 </div>
 
 ## Documentation
-- [Training Log](docs/Training%20Log.md)
-- [Notes](docs/Notes.md)
+- [Training Log](docs/Training-Log.md)
+- [Setup Guide](docs/Setup-guide.md)
 - [Report](Report.pdf)
 
 ## Why Mainrun?

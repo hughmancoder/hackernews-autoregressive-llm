@@ -21,6 +21,25 @@ tests/test_inference.py
 mainrun*.log
 *.pt
 
+# LaTeX build artifacts & logs
+*.aux
+*.log
+!mainrun/logs/*.log
+*.out
+*.toc
+*.bbl
+*.blg
+*.fls
+*.fdb_latexmk
+*.synctex*
+*.nav
+*.snm
+*.vrb
+*.lof
+*.lot
+*.latex
+docs/*.pdf
+
 node_modules/
 
 .vscode/

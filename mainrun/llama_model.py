@@ -1,5 +1,6 @@
 """
 Defines the Llama style transformer model and  configuration
+Based on paper: LLaMA: Open and Efficient Foundation Language Models by Meta AI
 """
 
 import math
@@ -29,7 +30,7 @@ class CausalSelfAttention(nn.Module):
         self.qkv = nn.Linear(cfg.d_model, 3 * cfg.d_model, bias=False)
         self.proj = nn.Linear(cfg.d_model, cfg.d_model, bias=False)
 
-        # Initializes dropout layers to randomly zero out elements during training to mitigate overfitting
+        # Initialises dropout layers to randomly zero out elements during training to mitigate overfitting
         self.attn_drop = nn.Dropout(cfg.dropout)
         self.resid_drop= nn.Dropout(cfg.dropout)
 
@@ -52,6 +53,8 @@ class CausalSelfAttention(nn.Module):
 
         # scaled dot product attention
         att = (q @ k.transpose(-2, -1)) * (1.0 / math.sqrt(self.head_dim))
+        
+        # upper triangular matrix mask to prevent attending to future tokens
         att = att.masked_fill(self.tril[:T, :T] == 0, float("-inf"))
         att = F.softmax(att, dim=-1)
         att = self.attn_drop(att)
@@ -88,11 +91,11 @@ class RotaryPositionalEmbeddingFrequencies(nn.Module):
         dim_half = head_dim // 2
         
         # -math.log(10000.0) = -ln(10000)
-        # torch.arange(0, dim_half) / dim_half = i / (d/2)
+        # torch.arange(0, dim_half) / dim_half = i / (d/2). Equivalent to 10000^(-2i/d)
         freqs = torch.exp(-math.log(10000.0) * torch.arange(0, dim_half).float() / dim_half) 
         t = torch.arange(max_seq_len).float() 
         
-        # Outer product to construct the angle grid of shape (max_seq_len, dim_half)
+        # Position angle matrix m*Theta. Outer product to construct the angle grid of shape (max_seq_len, dim_half)
         freqs = torch.outer(t, freqs) 
         
         # Duplicate frequencies for both halves of the dimension to give the full shape (max_seq_len, head_dim)
@@ -107,7 +110,7 @@ class RotaryPositionalEmbeddingFrequencies(nn.Module):
         # Slice the precomputed cache up to the current temporal sequence length T
         return self.cos_cached[:, :, :seq_len, :], self.sin_cached[:, :, :seq_len, :]
 
-class LlamaDecoderBlock(nn.Module):
+class LlamaTransfomerDecoderBlock(nn.Module):
     def __init__(self, cfg: LlamaConfig):
         super().__init__()
         # define two separate instances  so each layer can learn independent scaling weights
@@ -127,19 +130,11 @@ class LlamaModel(nn.Module):
         self.cfg = cfg
         self.token_emb = nn.Embedding(cfg.vocab_size, cfg.d_model)
         self.drop      = nn.Dropout(cfg.dropout)
-        self.blocks    = nn.ModuleList([LlamaDecoderBlock(cfg) for _ in range(cfg.n_layer)])
+        self.blocks    = nn.ModuleList([LlamaTransfomerDecoderBlock(cfg) for _ in range(cfg.n_layer)])
         self.ln_f      = nn.RMSNorm(cfg.d_model)
         self.head      = nn.Linear(cfg.d_model, cfg.vocab_size, bias=False)
         self.apply(self._init_weights)
         self.head.weight = self.token_emb.weight
-
-        # NOTE: try without scaling 
-        #  scale residual output projections by 1 / sqrt(2 * n_layer)
-        # Prevents residual stream variance from accumulating across layers and stabilises early training
-        scale = (2 * cfg.n_layer) ** -0.5
-        for block in self.blocks:
-            nn.init.normal_(block.attn.proj.weight, mean=0.0, std=0.02 * scale)
-            nn.init.normal_(block.mlp.swiglu.down_proj.weight, mean=0.0, std=0.02 * scale)
 
     @staticmethod
     def _init_weights(module):
@@ -173,7 +168,7 @@ class LlamaMLP(nn.Module):
 
 class SwiGLU(nn.Module):
     """
-    Computes: down_proj(SiLU(gate_proj(x)) * up_proj(x)) with biases 
+    Computes: down_proj(SiLU(gate_proj(x)) * up_proj(x)) 
     """
     def __init__(self, d_model: int, hidden_dim: int):
         super().__init__()
@@ -182,7 +177,7 @@ class SwiGLU(nn.Module):
         self.down_proj = nn.Linear(hidden_dim, d_model, bias=False)
             
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        gated = F.silu((self.gate_proj(x)) * self.up_proj(x))
+        gated = F.silu(self.gate_proj(x)) * self.up_proj(x)
         return self.down_proj(gated)
 
 
