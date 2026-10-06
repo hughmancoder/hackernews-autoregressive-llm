@@ -3,7 +3,6 @@ Contains hyperparameters, logging configuration, and the core training loop.
 """
 
 import posixpath
-import utils
 import argparse
 import random, time
 from dataclasses import dataclass
@@ -37,7 +36,7 @@ class Hyperparameters:
     seed: int = 1337
     num_titles: int = 100_000
     val_frac: float = 0.10
-    log_file: str = "./logs/mainrun.log"
+    log_file: str = "./logs/llm-training.log"
 
 
 def get_args() -> Hyperparameters:

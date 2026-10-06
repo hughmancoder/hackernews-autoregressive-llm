@@ -2,7 +2,7 @@ import unittest
 import torch
 import torch.nn.functional as F
 
-from mainrun.llama_model import (
+from src.llama_model import (
     LlamaConfig,
     LlamaTransfomerDecoderBlock,
     LlamaModel,

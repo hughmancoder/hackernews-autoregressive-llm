@@ -65,11 +65,8 @@ if [ ! -f "$PDF_OUTPUT" ]; then
     exit 1
 fi
 
-# Copy generated PDF to root and mainrun/ folder as required
+# Copy generated PDF to root
 cp "$PDF_OUTPUT" Report.pdf
-mkdir -p mainrun
-cp "$PDF_OUTPUT" mainrun/Report.pdf
 
 echo "Done! Report generated successfully at:"
 echo " - Report.pdf (root)"
-echo " - mainrun/Report.pdf"

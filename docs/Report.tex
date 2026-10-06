@@ -31,7 +31,7 @@
     tabsize=4
 }
 
-\title{\textbf{Mainrun Report}}
+\title{\textbf{Training a Small Autoregressive LLM on Hacker News Headlines}}
 \author{Hugh Signoriello}
 \date{}
 
@@ -75,7 +75,7 @@ To maintain the parameter budget relative to standard $4 \times d_{\text{model}}
 
 \subsection{Rotary Position Embeddings (RoPE)}
 
-The absolute positional embeddings were removed and replaced with rotary positional embeddings (RoPE) \cite{llama}. RoPE is a type of position encoding that maintains the order of tokens in sequences by incorporating both absolute position and relative position information among tokens \cite{llama-3-guide}. It performs positional encoding by rotating query and key representations using a rotation matrix. RoPE is advantageous because it naturally incorporates relative position dependency into the self-attention formulation, providing flexibility across sequence lengths and decaying inter-token dependency with increasing relative distance \cite{rope} compared to learned absolute embeddings. As a result of helping the transfomer genralise better to longer sequences and learn positional context more effectively than traditional absolute position enbeddings, RoPE embeddigns may decrease the loss function. The implementation was adapted from: \href{https://github.com/huggingface/transformers/blob/main/src/transformers/models/llama/modeling_llama.py}{Hugging Face Transformers \texttt{modeling\_llama.py}}. In thisn the code you are using (the rotate_half method), the vector is split down the middle. In this implementation the vector is split down the middle. The first half represents all the x-coordinates, and the second half represents all the y-coordinates for which the rotation matrix is applied. 
+The absolute positional embeddings were removed and replaced with rotary positional embeddings (RoPE) \cite{llama}. RoPE is a type of position encoding that maintains the order of tokens in sequences by incorporating both absolute position and relative position information among tokens \cite{llama-3-guide}. It performs positional encoding by rotating query and key representations using a rotation matrix. RoPE is advantageous because it naturally incorporates relative position dependency into the self-attention formulation, providing flexibility across sequence lengths and decaying inter-token dependency with increasing relative distance \cite{rope} compared to learned absolute embeddings. As a result of helping the transfomer genralise better to longer sequences and learn positional context more effectively than traditional absolute position enbeddings, RoPE embeddigns may decrease the loss function. The implementation was adapted from: \href{https://github.com/huggingface/transformers/blob/main/src/transformers/models/llama/modeling_llama.py}{Hugging Face Transformers \texttt{modeling\_llama.py}}. In the \texttt{rotate\_half} method, the vector is split down the middle. The first half represents all the x-coordinates, and the second half represents all the y-coordinates for which the rotation matrix is applied. 
 
 \section{Training Process and Hyperparameter Selection}
 
@@ -101,7 +101,6 @@ The cosine decay helps smoothly curve the learning rate downwards following a co
 \end{itemize}
 
 \section{Experimental Results}
-Table~\ref{tab:results} summarises training iterations for various experiments and training logs for experiments can be found in \texttt{mainrun/logs} which list the hyperparameters and training metrics. I documented the various experiments and hyperparamater changes for each experiment in \texttt{docs/Training Log.md} as I found ways to iteratively improve the model's validation loss.
 
 \begin{table}[htbp]
 \centering

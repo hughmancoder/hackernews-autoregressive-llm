@@ -1,47 +1,43 @@
-# Setup guide
+# Setup Guide
 
-### Setup Virtual Environment (if running locally)
+## Virtual Environment
 ```bash
-# Create and activate a virtual environment
 python3 -m venv .venv
 source .venv/bin/activate
-
-# Install dependencies
-pip install -r .devcontainer/requirements.txt
+pip install -r requirements.txt
 ```
 
-*(Optional)* Install Taskfile CLI and zx for running task workflows locally:
+*(Optional)* Task runner and zx for the task workflows:
 ```bash
 brew install go-task
 npm install -g zx
 ```
 
-### Download Dataset
+## Download Dataset
 ```bash
-cd mainrun && python3 download_dataset.py && cd ..
+cd src && python3 download_dataset.py && cd ..
 ```
 
-### Running Docker Container
+## Dev Container (optional)
+1. Start Docker: `open -a Docker`
+2. Open the project in VS Code
+3. `Cmd + Shift + P` → **Dev Containers: Reopen in Container**
 
-**Start the Docker Daemon**
-```bash
-open -a Docker
-```
+## Commands
 
-**Start the Dev Container**
-1. Open the project folder in VS Code
-2. Press `Cmd + Shift + P` 
-3. Select **Dev Containers: Reopen in Container**
+Run `make` targets from the repo root (see [makefile](../makefile)):
 
-### Other commands
-
-Refer to the `Makefile` for commands to train and test the model
+| Command | Description |
+|---------|-------------|
+| `make train_local` | Train with default settings |
+| `make train_custom` | Train with custom hyperparameters |
+| `make analyse_train_run` | Print the baseline log |
+| `make test` | Run all tests |
+| `make generate_report` | Build the PDF report |
 
 ## Files
 
-`data.py`: Handles dataset loading,  Byte Pair Encoding (BPE) tokenizer training, and data batching.
-`train.py`: Implements the training loop with hyperparameter optimisation.
-`llama_model.py`: Defines the llama-style transformer model architecture.
-
-
-
+- `src/data.py`: dataset loading, BPE tokenizer training, batching.
+- `src/train.py`: training loop and hyperparameters.
+- `src/llama_model.py`: Llama-style transformer.
+- `src/gpt_model.py`: GPT-2 style baseline model.

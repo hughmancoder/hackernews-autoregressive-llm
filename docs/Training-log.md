@@ -4,7 +4,7 @@
 
 ### Llama model without prenorm scaling (exp-004-llama)
 
-`mainrun/logs/exp-004-llama.log`
+`src/logs/exp-004-llama.log`
 
 - `Final Val Loss` : 1.234
 - `Final Train Loss` : 3.988
@@ -16,7 +16,7 @@ same parameters are used as the previous experiment
 
 ### Llama model with warmup_scheduler and cosine_scheduler optimisation suggested from `LLaMA: Open and Efficient Foundation Language Models` (exp-005-llama)
 
-`mainrun/logs/exp-005-llama.log`
+`src/logs/exp-005-llama.log`
 
 - `Final Val Loss` : 1.252
 - `Final Train Loss` : 3.656
@@ -51,7 +51,7 @@ Increased block size. block_size = 128 tokens.
 ## GPT-2 Style Transfomer Architecture
 ### Baseline
 
-`mainrun/logs/baseline.log`
+`src/logs/baseline.log`
 
 **Results**
 - `Final Val Loss`: 1.754
@@ -74,7 +74,7 @@ Increased block size. block_size = 128 tokens.
 - `parameters`: ~27.17M
 
 ### exp-001-hp
-`mainrun/logs/exp-001-hp.log`
+`src/logs/exp-001-hp.log`
 
 **Results**
 - `Runtime`: ~13.1 min (783.4s on Apple Silicon MPS)
@@ -101,7 +101,7 @@ Increased block size. block_size = 128 tokens.
 
 ### exp-002-hp
 
-`mainrun/logs/exp-002-hp.log`
+`src/logs/exp-002-hp.log`
 **Training Hyperparameters**
 - `optimizer`: AdamW
 - `lr`: 0.0006 
@@ -126,7 +126,7 @@ Increased block size. block_size = 128 tokens.
 
 ### exp-003-hp
 
-`mainrun/logs/exp-003-hp.log`
+`src/logs/exp-003-hp.log`
 
 **Training Hyperparameters**
 - `optimizer`: AdamW

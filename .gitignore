@@ -1,4 +1,4 @@
-mainrun/data/
+src/data/
 data/
 
 __pycache__/
@@ -18,13 +18,13 @@ docs/Gpt-style-architecture.md
 # other
 tests/test_inference.py
 
-mainrun*.log
+src*.log
 *.pt
 
 # LaTeX build artifacts & logs
 *.aux
 *.log
-!mainrun/logs/*.log
+!src/logs/*.log
 *.out
 *.toc
 *.bbl

@@ -4,7 +4,7 @@ from posixpath import split
 import unittest
 import torch
 
-from mainrun.data import train_tokenizer, BPETokenizer, get_batch, iter_full_split
+from src.data import train_tokenizer, BPETokenizer, get_batch, iter_full_split
 
 
 class TestMainFunctionality(unittest.TestCase):

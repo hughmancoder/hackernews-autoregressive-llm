@@ -1,4 +1,4 @@
-{"event": "hyperparameters_configured", "timestamp": 1788315611.219562, "block_size": 32, "batch_size": 128, "vocab_size": 8000, "n_layer": 6, "n_head": 8, "d_model": 512, "dropout": 0.0, "lr": 0.0008, "weight_decay": 0.1, "evals_per_epoch": 3, "epochs": 7, "seed": 1337, "num_titles": 100000, "val_frac": 0.1, "log_file": "./logs/mainrun.log"}
+{"event": "hyperparameters_configured", "timestamp": 1788315611.219562, "block_size": 32, "batch_size": 128, "vocab_size": 8000, "n_layer": 6, "n_head": 8, "d_model": 512, "dropout": 0.0, "lr": 0.0008, "weight_decay": 0.1, "evals_per_epoch": 3, "epochs": 7, "seed": 1337, "num_titles": 100000, "val_frac": 0.1, "log_file": "./logs/llm-training.log"}
 {"event": "device_info", "timestamp": 1788315611.238297, "device": "mps"}
 {"event": "dataset_info", "timestamp": 1788315619.828341, "titles_count": 90000, "epochs": 7, "batches_per_epoch": 321, "tokens_per_epoch": 1315347, "vocab_size": 8000}
 {"event": "model_info", "timestamp": 1788315620.332157, "parameters_count": 23027712}

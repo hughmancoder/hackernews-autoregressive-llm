@@ -1,83 +1,43 @@
-<div align="center">
-  <img src="docs/images/logo.png" alt="Maincode Logo" width="100%">
-  
-  [![Dev Container](https://img.shields.io/badge/Dev%20Container-Ready-green.svg)](.devcontainer)
-  [![Python 3.10](https://img.shields.io/badge/Python-3.10-blue.svg)](https://www.python.org/)
-  [![PyTorch](https://img.shields.io/badge/PyTorch-2.7.1-orange.svg)](https://pytorch.org/)
-</div>
+# HackerNews Autoregressive LLM
 
-## Documentation
-- [Training Log](docs/Training-Log.md)
-- [Setup Guide](docs/Setup-guide.md)
-- [Report](Report.pdf)
+A small autoregressive transformer trained on Hacker News headlines. Both GPT-style and LLama-style architectures were experimented with to minimise validation loss. 
 
-## Why Mainrun?
+## LLM Architecture performance
 
-Mainrun is [Maincode's](https://maincode.com) standardized assessment framework for evaluating machine learning engineering expertise, specifically focused on LLM training and optimization. This project provides a consistent, real-world environment to explore a candidate's knowledge of:
+| Model | Val loss |
+|-------|----------|
+| GPT-2 style baseline (SGD) | 1.754 |
+| GPT-2 + AdamW (exp-002) | 1.29 |
+| Llama-style (exp-004) | 1.234 |
+| Llama + dropout 0.05 (exp-006) | 1.22 |
+| **Llama + block_size 128 (exp-007)** | **1.188** |
 
-- Transformer architectures and training dynamics
-- Performance optimization techniques
-- Code quality and engineering practices
-- Problem-solving approaches to ML challenges
-- Areas of personal interest and expertise in ML optimization
+The best run uses a Llama-style architecture (~23M parameters) with a 16k BPE vocabulary, `block_size=128`, AdamW, warmup + cosine schedule and light dropout. See the [Training Log](docs/Training-log.md) for all experiments and the [Report](Report.pdf) for analysis.
 
-## The Challenge
-Your task is to analyze and improve the training run of a small GPT-2 style model. The code is designed to train on a Hacker News headline dataset.
-Your goal is to minimize the validation loss as low as possible within 7 epochs. The baseline to beat is a validation loss of 1.754.
+## Constraints
 
-### The Rules
-The rules are simple:
+- Fixed number of epochs, random seed, dataset and validation fraction.
+- No pre-trained weights or data augmentation.
+- `evaluate()` is unchanged.
+- Everything else (architecture, tokenizer, optimizer, scheduler, hyperparameters) is open.
 
-- You cannot change the number of epochs, the random seed, the dataset, or the validation fraction.
-- You cannot use pre-trained weights or augment the training data.
-- You cannot change the `evaluate()` function.
-- Everything else is fair game! You can change the model architecture, initialization, tokenization, hyperparameters, optimizer, scheduler, training loop, etc.
-## Getting Started
+## Quick Start
 
 ```bash
-# 1. Clone the repository and open it in VS Code
-git clone <your-assessment-repo-url>
-cd mainrun
-code .
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
 
-# 2. When prompted, reopen the project in the Dev Container
-# This initial build may take a few minutes.
-
-# 3. Run the baseline training to see the starting point
-task train
-
-# 4. Analyze the baseline performance in the log file
-cat mainrun/logs/baseline.log
-
-# 5. Start optimizing!
+make train_local        # train
+make test               # run tests
 ```
 
-## Key Commands
-You will only need two main commands for this assessment:
+See the [Setup Guide](docs/Setup-guide.md) for details.
 
-- `task train`: The primary command. It first runs a checkpoint and then executes the full training pipeline in train.py. You have complete freedom to refactor or extend the code, but all functionality must be accessible through this single script.
-- `task submit`: When you are ready, this command will create a final checkpoint, zip up your entire repository (including all code and logs), and upload it to Maincode's evaluation system for review.
+## Layout
 
-## Evaluation
-Submissions will be evaluated on:
-
-1. **Model Performance**: Most importantly, the improvement in validation loss compared to the baseline.
-2. **Code Quality**: Clean, maintainable, and well-documented code.
-3. **Innovation**: Creative or insightful approaches to optimization.
-4. **Documentation**: A short report.pdf that walks through the changes you made, your reasoning, and their effect on the training curves. Place the report in the mainrun folder before submitting.
-
-## Legal and Contributing
-By participating and submitting your work, you agree to the terms outlined in our [Legal Notice](LEGAL-NOTICE.md). This includes the assignment of all intellectual property rights in your submission to Maincode Pty Ltd.
-
-For information on how to report issues or suggest improvements to the assessment framework itself, please see our [Contributing Guide](CONTRIBUTING.md).
-
-## The Team
-
-This project is made possible by these wonderful contributors:
-
-| Name          | GitHub Profile                                |
-|---------------|----------------------------------------------|
-| **Kees** | [@casebakker](https://github.com/casebakker)      |
-| **Sara**| [@maincode-sarae](https://github.com/maincode-sarae)|
-| **Fabian** | [@fabian-maincode](https://github.com/fabian-maincode)|
-| **Dave** | [@maincode-dave](https://github.com/maincode-dave) |
+```
+src/        model, tokenizer, training loop, logs
+tests/      unit tests
+docs/       training log, setup guide, report source
+scripts/    checkpoint, report generation
+```
